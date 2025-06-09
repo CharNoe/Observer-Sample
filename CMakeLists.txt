@@ -27,6 +27,10 @@ qt_add_executable(observer_sample
     src/core/BookmarkNode_Folder.hpp src/core/BookmarkNode_Folder.cpp
     src/core/BookmarkNode_Url.hpp src/core/BookmarkNode_Url.cpp
     src/core/BookmarkNodeEvent.hpp
+    src/gui/BookmarkTreeWidget.hpp src/gui/BookmarkTreeWidget.cpp src/gui/BookmarkTreeWidget.ui
+    src/ctrl/BookmarkItemModelTree.hpp src/ctrl/BookmarkItemModelTree.cpp
+    src/ctrl/System.hpp src/ctrl/System.cpp
+    src/ctrl/BookmarkManager.hpp src/ctrl/BookmarkManager.cpp
 )
 
 target_link_libraries(observer_sample

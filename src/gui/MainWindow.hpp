@@ -2,6 +2,11 @@
 
 #include <QMainWindow>
 
+namespace ctrl
+{
+class System;
+} // namespace ctrl
+
 namespace gui {
 
 namespace Ui {
@@ -13,11 +18,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(const ctrl::System& system, QWidget* parent = nullptr);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+    const ctrl::System& m_system;
 };
 
 } // namespace gui
