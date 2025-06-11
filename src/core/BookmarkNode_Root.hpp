@@ -27,6 +27,7 @@ private:
     auto GetParentImpl() const -> std::shared_ptr<BookmarkNode> override;
     auto SharedFromThisImpl() -> std::shared_ptr<BookmarkNode> override;
     auto GetChildImpl(size_t index) const -> std::shared_ptr<BookmarkNode> override;
+    bool IsInsertableImpl(const BookmarkNode& node) override;
 };
 
 } // namespace core

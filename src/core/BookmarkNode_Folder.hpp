@@ -28,6 +28,7 @@ private:
     size_t GetChildrenSizeImpl() const override;
     std::shared_ptr<BookmarkNode> SharedFromThisImpl() override;
     std::shared_ptr<BookmarkNode> GetChildImpl(size_t index) const override;
+    bool IsInsertableImpl(const BookmarkNode& node) override;
 };
 
 } // namespace core

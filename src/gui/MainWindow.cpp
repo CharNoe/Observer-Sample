@@ -1,4 +1,5 @@
 #include "MainWindow.hpp"
+#include "ctrl/BookmarkManager.hpp"
 #include "ui_MainWindow.h"
 
 #include "ctrl/System.hpp"
@@ -13,11 +14,19 @@ MainWindow::MainWindow(const ctrl::System& system, QWidget* parent)
 {
     ui->setupUi(this);
     setCentralWidget(new BookmarkTreeWidget{m_system.GetBookmarkManager()});
+
+    system.GetBookmarkManager()->eventSender.ConnectQt(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::ReceiveEvent(const ctrl::BookmarkManagerEventParam::CurrentChanged& param
+)
+{
+    ui->actionDelete_Current->setEnabled(static_cast<bool>(param.currentNode));
 }
 
 } // namespace gui

@@ -55,4 +55,9 @@ std::shared_ptr<BookmarkNode> BookmarkNode_Url::GetChildImpl(size_t index) const
     return nullptr;
 }
 
+bool BookmarkNode_Url::IsInsertableImpl(const BookmarkNode& node)
+{
+    return false;
+}
+
 } // namespace core

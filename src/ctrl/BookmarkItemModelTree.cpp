@@ -185,44 +185,41 @@ auto BookmarkItemModelTree::FindItemModelNode(
     return {const_cast<ItemModelNode*>(ptr), row};
 }
 
-void BookmarkItemModelTree::BookmarkNode_NameChangedRecursive(
-    const std::shared_ptr<core::BookmarkNode>& node, const QString& name
+void BookmarkItemModelTree::ReceiveEvent(
+    const core::BookmarkNodeEventParam::NameChangedRecursive& param
 )
 {
-    const auto index = GetModelIndex(node, Column_Name);
+    const auto index = GetModelIndex(param.node, Column_Name);
     emit dataChanged(index, index);
 }
 
-void BookmarkItemModelTree::BookmarkNode_ChildInsertedRecursive(
-    const std::shared_ptr<core::BookmarkNode>& node,
-    const std::shared_ptr<core::BookmarkNode>& child,
-    size_t index
+void BookmarkItemModelTree::ReceiveEvent(
+    const core::BookmarkNodeEventParam::ChildInsertedRecursive& param
 )
 {
-    const auto modelIndex = GetModelIndex(node);
-    const auto row = static_cast<int>(index);
-    qDebug() << modelIndex << row;
+    const auto modelIndex = GetModelIndex(param.node);
+    const auto row = static_cast<int>(param.index);
 
     beginInsertRows(modelIndex, row, row);
-    ItemModelNode* itemModelNode = FindItemModelNode(node).first;
+    ItemModelNode* itemModelNode = FindItemModelNode(param.node).first;
     itemModelNode->children.insert(
-        std::next(itemModelNode->children.begin(), index), MakeItemModelNode(child)
+        std::next(itemModelNode->children.begin(), param.index),
+        MakeItemModelNode(param.child)
     );
     endInsertRows();
 }
 
-void BookmarkItemModelTree::BookmarkNode_ChildErasedRecursive(
-    const std::shared_ptr<core::BookmarkNode>& node,
-    const std::shared_ptr<core::BookmarkNode>& name,
-    size_t index
+void BookmarkItemModelTree::ReceiveEvent(
+    const core::BookmarkNodeEventParam::ChildErasedRecursive& param
 )
 {
-    const auto modelIndex = GetModelIndex(node);
-    const auto row = static_cast<int>(index);
+    const auto modelIndex = GetModelIndex(param.node);
+    const auto row = static_cast<int>(param.index);
 
     beginRemoveRows(modelIndex, row, row);
-    ItemModelNode* itemModelNode = FindItemModelNode(node).first;
-    itemModelNode->children.erase(std::next(itemModelNode->children.begin(), index));
+    ItemModelNode* itemModelNode = FindItemModelNode(param.node).first;
+    itemModelNode->children.erase(std::next(itemModelNode->children.begin(), param.index)
+    );
     endRemoveRows();
 }
 

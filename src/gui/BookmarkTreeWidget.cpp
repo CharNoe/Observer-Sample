@@ -14,8 +14,9 @@ BookmarkTreeWidget::BookmarkTreeWidget(
 )
     : QWidget(parent)
     , ui(new Ui::BookmarkTreeWidget)
+    , m_bookmarkManager{std::move(bookmarkManager)}
     , m_model{
-          new ctrl::BookmarkItemModelTree{bookmarkManager->GetRootBookmarkBase(), this}
+          new ctrl::BookmarkItemModelTree{m_bookmarkManager->GetRootBookmarkBase(), this}
       }
 {
     ui->setupUi(this);
@@ -29,6 +30,12 @@ BookmarkTreeWidget::BookmarkTreeWidget(
         this,
         &BookmarkTreeWidget::AddBookmarkFolder
     );
+    connect(
+        ui->treeView->selectionModel(),
+        &QItemSelectionModel::currentChanged,
+        this,
+        &BookmarkTreeWidget::OnCurrentIndexChanged
+    );
 
     ui->addButton->addAction(ui->actionAddUrl);
     ui->addButton->addAction(ui->action_AddFolder);
@@ -39,6 +46,14 @@ BookmarkTreeWidget::~BookmarkTreeWidget()
     delete ui;
 }
 
+void BookmarkTreeWidget::OnCurrentIndexChanged(
+    const QModelIndex& after, const QModelIndex& before
+)
+{
+    auto node = m_model->GetBookmarkNode(after);
+    m_bookmarkManager->SetCurrentNode(std::move(node));
+}
+
 void BookmarkTreeWidget::AddBookmarkUrl()
 {
     QString name = QInputDialog::getText(this, tr("Add Url"), tr("Name"));
@@ -46,7 +61,7 @@ void BookmarkTreeWidget::AddBookmarkUrl()
         return;
 
     auto node = std::make_shared<core::BookmarkNode_Url>(std::move(name), "");
-    m_model->GetRootNode()->PushChild(std::move(node));
+    AddBookmark(std::move(node));
 }
 
 void BookmarkTreeWidget::AddBookmarkFolder()
@@ -56,7 +71,31 @@ void BookmarkTreeWidget::AddBookmarkFolder()
         return;
 
     auto node = std::make_shared<core::BookmarkNode_Folder>(std::move(name));
-    m_model->GetRootNode()->PushChild(std::move(node));
+    AddBookmark(std::move(node));
+}
+
+void BookmarkTreeWidget::AddBookmark(std::shared_ptr<core::BookmarkNode> node)
+{
+    if (!node)
+        return;
+
+    auto target = m_bookmarkManager->GetCurrentNode();
+    if (!target)
+        target = m_bookmarkManager->GetRootBookmarkBase();
+
+    while (target)
+    {
+        if (target->IsInsertable(*node))
+        {
+            if (target->PushChild(node))
+            {
+                auto index = m_model->GetModelIndex(node);
+                ui->treeView->setCurrentIndex(index);
+            }
+            return;
+        }
+        target = target->GetParent();
+    }
 }
 
 } // namespace gui

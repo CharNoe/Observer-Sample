@@ -30,10 +30,13 @@ public:
     ~BookmarkTreeWidget();
 
 private:
+    void OnCurrentIndexChanged(const QModelIndex& after, const QModelIndex& before);
     void AddBookmarkUrl();
     void AddBookmarkFolder();
+    void AddBookmark(std::shared_ptr<core::BookmarkNode> node);
 
     Ui::BookmarkTreeWidget* ui;
+    const std::shared_ptr<ctrl::BookmarkManager> m_bookmarkManager;
     QPointer<ctrl::BookmarkItemModelTree> m_model;
 };
 

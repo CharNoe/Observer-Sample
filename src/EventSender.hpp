@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EventAccess.hpp"
 #include <sigslot/adapter/qt.hpp>
 #include <sigslot/signal.hpp>
 
@@ -13,47 +14,50 @@ public:
     auto ConnectQt(Type* receiver) -> sigslot::connection;
     auto DisconnectQt(QObject* receiver) -> size_t;
 
-    template <class... FuncArgTypes, class... ArgTypes>
-    void operator()(void (Event::*func)(FuncArgTypes...), const ArgTypes&... args)
+    template <class EventParam>
+    void operator()(const EventParam& param);
+
+private:
+    struct EventCaller;
+    template <class EventParam>
+    struct EventCallerOf;
+    struct Slot;
+
+    sigslot::signal_st<EventCaller&> m_sig;
+};
+
+template <class Event>
+struct EventSender<Event>::EventCaller
+{
+    virtual void Call(Event& event) = 0;
+};
+
+template <class Event>
+template <class EventParam>
+struct EventSender<Event>::EventCallerOf : EventSender<Event>::EventCaller
+{
+    EventCallerOf(const EventParam& param)
+        : m_param{param}
     {
-        auto lambda = [&... args = args, func](Event& event)
-        {
-            (event.*func)(args...);
-        };
-        EventCallerOf caller{std::move(lambda)};
-        m_sig(caller);
+    }
+    void Call(Event& event) override
+    {
+        auto func = EventAccess::GetReceiveEventPtr<Event, EventParam>();
+        (event.*func)(m_param);
     }
 
 private:
-    struct EventCaller
-    {
-        virtual void Call(Event& event) = 0;
-    };
-    template <class Lambda>
-    struct EventCallerOf : EventCaller
-    {
-        EventCallerOf(Lambda&& lambda)
-            : m_lambda{std::move(lambda)}
-        {
-        }
-        void Call(Event& event) override
-        {
-            m_lambda(event);
-        }
+    EventParam m_param;
+};
 
-    private:
-        Lambda m_lambda;
-    };
-    struct Slot
+template <class Event>
+struct EventSender<Event>::Slot
+{
+    Event* event;
+    void operator()(EventCaller& caller)
     {
-        Event* event;
-        void operator()(EventCaller& caller)
-        {
-            caller.Call(*event);
-        }
-    };
-
-    sigslot::signal_st<EventCaller&> m_sig;
+        caller.Call(*event);
+    }
 };
 
 template <class Event>
@@ -82,4 +86,12 @@ template <class Event>
 inline size_t EventSender<Event>::DisconnectQt(QObject* receiver)
 {
     return m_sig.disconnect(receiver);
+}
+
+template <class Event>
+template <class EventParam>
+inline void EventSender<Event>::operator()(const EventParam& param)
+{
+    EventCallerOf<EventParam> caller{param};
+    m_sig(caller);
 }

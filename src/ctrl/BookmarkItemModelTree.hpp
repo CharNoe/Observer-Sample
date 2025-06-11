@@ -63,18 +63,11 @@ private:
 
     // BookmarkNodeEvent interface
 private:
-    void BookmarkNode_NameChangedRecursive(
-        const std::shared_ptr<core::BookmarkNode>& node, const QString& name
+    void ReceiveEvent(const core::BookmarkNodeEventParam::NameChangedRecursive& param
     ) override;
-    void BookmarkNode_ChildInsertedRecursive(
-        const std::shared_ptr<core::BookmarkNode>& node,
-        const std::shared_ptr<core::BookmarkNode>& child,
-        size_t index
+    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildInsertedRecursive& param
     ) override;
-    void BookmarkNode_ChildErasedRecursive(
-        const std::shared_ptr<core::BookmarkNode>& node,
-        const std::shared_ptr<core::BookmarkNode>& name,
-        size_t index
+    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildErasedRecursive& param
     ) override;
 };
 

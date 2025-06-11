@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ctrl/BookmarkManagerEvent.hpp"
 #include <QMainWindow>
 
 namespace ctrl
@@ -13,7 +14,9 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow
+    : public QMainWindow
+    , public ctrl::BookmarkManagerEvent
 {
     Q_OBJECT
 
@@ -24,6 +27,11 @@ public:
 private:
     Ui::MainWindow *ui;
     const ctrl::System& m_system;
+
+    // BookmarkManagerEvent interface
+private:
+    void ReceiveEvent(const ctrl::BookmarkManagerEventParam::CurrentChanged& param
+    ) override;
 };
 
 } // namespace gui

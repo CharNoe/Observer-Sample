@@ -5,40 +5,64 @@
 namespace core
 {
 
+class BookmarkNode;
+
+struct BookmarkNodeEventParam
+{
+    struct NameChanged
+    {
+        QString name;
+    };
+    struct NameChangedRecursive
+    {
+        std::shared_ptr<BookmarkNode> node;
+        QString name;
+    };
+    struct ChildInserted
+    {
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
+    struct ChildInsertedRecursive
+    {
+        std::shared_ptr<BookmarkNode> node;
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
+    struct ChildErased
+    {
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
+    struct ChildErasedRecursive
+    {
+        std::shared_ptr<BookmarkNode> node;
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
+};
+
 class BookmarkNodeEvent
 {
     friend class BookmarkNode;
+    friend class EventAccess;
 
-    virtual void BookmarkNode_NameChanged(const QString& name)
+    virtual void ReceiveEvent(const BookmarkNodeEventParam::NameChanged& param)
     {
     }
-    virtual void BookmarkNode_NameChangedRecursive(
-        const std::shared_ptr<BookmarkNode>& node, const QString& name
-    )
+    virtual void ReceiveEvent(const BookmarkNodeEventParam::NameChangedRecursive& param)
     {
     }
-    virtual void BookmarkNode_ChildInserted(
-        const std::shared_ptr<BookmarkNode>& child, size_t index
-    )
+    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildInserted& param)
     {
     }
-    virtual void BookmarkNode_ChildInsertedRecursive(
-        const std::shared_ptr<BookmarkNode>& node,
-        const std::shared_ptr<BookmarkNode>& child,
-        size_t index
-    )
+    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildInsertedRecursive& param)
     {
     }
-    virtual void BookmarkNode_ChildErased(
-        const std::shared_ptr<BookmarkNode>& name, size_t index
-    )
+    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildErased& param)
     {
     }
-    virtual void BookmarkNode_ChildErasedRecursive(
-        const std::shared_ptr<BookmarkNode>& node,
-        const std::shared_ptr<BookmarkNode>& name,
-        size_t index
-    )
+    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildErasedRecursive& param)
     {
     }
 
