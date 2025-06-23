@@ -38,6 +38,7 @@ qt_add_executable(observer_sample
     src/core/BookmarkNode_UrlEvent.hpp
     src/core/BookmarkNodeVisitor.hpp src/core/BookmarkNodeVisitor.cpp
     src/HasConnection.hpp
+    src/EventMacro.hpp
 )
 
 target_link_libraries(observer_sample

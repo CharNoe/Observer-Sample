@@ -30,8 +30,7 @@ private:
 
     // BookmarkManagerEvent interface
 private:
-    void ReceiveEvent(const ctrl::BookmarkManagerEventParam::CurrentChanged& param
-    ) override;
+    void ReceiveEvent(const BookmarkManagerEvent_CurrentChanged& param) override;
 };
 
 } // namespace gui

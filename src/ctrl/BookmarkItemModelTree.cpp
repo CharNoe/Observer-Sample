@@ -257,7 +257,7 @@ auto BookmarkItemModelTree::FindItemModelNode(
 }
 
 void BookmarkItemModelTree::ReceiveEvent(
-    const core::BookmarkNodeEventParam::NameChangedRecursive& param
+    const BookmarkNode_NameChangedRecursive& param
 )
 {
     const auto index = GetModelIndex(param.node, Column_Name);
@@ -265,7 +265,7 @@ void BookmarkItemModelTree::ReceiveEvent(
 }
 
 void BookmarkItemModelTree::ReceiveEvent(
-    const core::BookmarkNodeEventParam::ChildInsertedRecursive& param
+    const BookmarkNode_ChildInsertedRecursive& param
 )
 {
     const auto modelIndex = GetModelIndex(param.node);
@@ -281,7 +281,7 @@ void BookmarkItemModelTree::ReceiveEvent(
 }
 
 void BookmarkItemModelTree::ReceiveEvent(
-    const core::BookmarkNodeEventParam::ChildErasedRecursive& param
+    const BookmarkNode_ChildErasedRecursive& param
 )
 {
     const auto modelIndex = GetModelIndex(param.node);

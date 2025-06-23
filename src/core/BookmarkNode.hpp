@@ -8,7 +8,7 @@ namespace core {
 
 class BookmarkNodeVisitor;
 
-class BookmarkNode : BookmarkNodeEventParam
+class BookmarkNode
 {
 public:
     BookmarkNode();

@@ -13,7 +13,7 @@ class BookmarkNode;
 namespace ctrl
 {
 
-class BookmarkManager final : BookmarkManagerEventParam
+class BookmarkManager final
 {
 public:
     BookmarkManager();

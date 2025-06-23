@@ -8,7 +8,6 @@ namespace core {
 class BookmarkNode_Url final
     : public BookmarkNode
     , public std::enable_shared_from_this<BookmarkNode_Url>
-    , BookmarkNode_UrlEventParam
 {
 public:
     BookmarkNode_Url(QString name, QString url);

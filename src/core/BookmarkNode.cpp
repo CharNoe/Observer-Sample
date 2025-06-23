@@ -20,9 +20,11 @@ bool BookmarkNode::SetName(const QString &name)
 {
     const bool isChanged = SetNameImpl(name);
     if (isChanged) {
-        NameChanged param{name};
+        BookmarkNodeEvent::BookmarkNode_NameChanged param{name};
+        BookmarkNodeEvent::BookmarkNode_NameChangedRecursive paramRecursive{
+            SharedFromThis(), name
+        };
         SendEvent(&eventSender, param);
-        NameChangedRecursive paramRecursive{SharedFromThis(), name};
         SendEventRecursive(paramRecursive);
     }
     return isChanged;
@@ -58,9 +60,11 @@ bool BookmarkNode::InsertChild(std::shared_ptr<BookmarkNode> child, size_t index
     const bool isChanged = InsertChildImpl(child, index);
     if (isChanged) {
         child->SetParent(SharedFromThis());
-        ChildInserted param{child, index};
+        BookmarkNodeEvent::BookmarkNode_ChildInserted param{child, index};
+        BookmarkNodeEvent::BookmarkNode_ChildInsertedRecursive paramRecursive{
+            SharedFromThis(), child, index
+        };
         SendEvent(&eventSender, param);
-        ChildInsertedRecursive paramRecursive{SharedFromThis(), child, index};
         SendEventRecursive(paramRecursive);
     }
     return isChanged;
@@ -76,9 +80,11 @@ std::shared_ptr<BookmarkNode> BookmarkNode::EraseChild(size_t index)
     std::shared_ptr<BookmarkNode> child = EraseChildImpl(index);
     if (child) {
         child->SetParent(nullptr);
-        ChildErased param{child, index};
+        BookmarkNodeEvent::BookmarkNode_ChildErased param{child, index};
+        BookmarkNodeEvent::BookmarkNode_ChildErasedRecursive paramRecursive{
+            SharedFromThis(), child, index
+        };
         SendEvent(&eventSender, param);
-        ChildErasedRecursive paramRecursive{SharedFromThis(), child, index};
         SendEventRecursive(paramRecursive);
     }
     return child;

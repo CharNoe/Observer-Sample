@@ -1,25 +1,22 @@
 #pragma once
 
+#include "EventMacro.hpp"
 #include <QString>
 
 namespace core
 {
 
-struct BookmarkNode_UrlEventParam
-{
-    struct UrlChanged
-    {
-        QString url;
-    };
-};
-
-struct BookmarkNode_UrlEvent
+class BookmarkNode_UrlEvent
 {
     friend class EventAccess;
 
-    virtual void ReceiveEvent(const BookmarkNode_UrlEventParam::UrlChanged& param)
+public:
+    virtual ~BookmarkNode_UrlEvent() = default;
+
+    EVENT_DEF(BookmarkNode_Url_UrlChanged)
     {
-    }
+        QString url;
+    };
 };
 
 } // namespace core

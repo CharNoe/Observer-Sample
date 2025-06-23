@@ -51,12 +51,9 @@ private:
 
     // BookmarkNodeEvent interface
 private:
-    void ReceiveEvent(const core::BookmarkNodeEventParam::NameChangedRecursive& param
-    ) override;
-    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildInsertedRecursive& param
-    ) override;
-    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildErasedRecursive& param
-    ) override;
+    void ReceiveEvent(const BookmarkNode_NameChangedRecursive& param) override;
+    void ReceiveEvent(const BookmarkNode_ChildInsertedRecursive& param) override;
+    void ReceiveEvent(const BookmarkNode_ChildErasedRecursive& param) override;
 
     // QAbstractItemModel interface
 public:

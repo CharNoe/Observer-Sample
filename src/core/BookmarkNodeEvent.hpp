@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EventMacro.hpp"
 #include <QString>
 
 namespace core
@@ -7,66 +8,44 @@ namespace core
 
 class BookmarkNode;
 
-struct BookmarkNodeEventParam
-{
-    struct NameChanged
-    {
-        QString name;
-    };
-    struct NameChangedRecursive
-    {
-        std::shared_ptr<BookmarkNode> node;
-        QString name;
-    };
-    struct ChildInserted
-    {
-        std::shared_ptr<BookmarkNode> child;
-        size_t index;
-    };
-    struct ChildInsertedRecursive
-    {
-        std::shared_ptr<BookmarkNode> node;
-        std::shared_ptr<BookmarkNode> child;
-        size_t index;
-    };
-    struct ChildErased
-    {
-        std::shared_ptr<BookmarkNode> child;
-        size_t index;
-    };
-    struct ChildErasedRecursive
-    {
-        std::shared_ptr<BookmarkNode> node;
-        std::shared_ptr<BookmarkNode> child;
-        size_t index;
-    };
-};
-
 class BookmarkNodeEvent
 {
     friend class EventAccess;
 
-    virtual void ReceiveEvent(const BookmarkNodeEventParam::NameChanged& param)
-    {
-    }
-    virtual void ReceiveEvent(const BookmarkNodeEventParam::NameChangedRecursive& param)
-    {
-    }
-    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildInserted& param)
-    {
-    }
-    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildInsertedRecursive& param)
-    {
-    }
-    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildErased& param)
-    {
-    }
-    virtual void ReceiveEvent(const BookmarkNodeEventParam::ChildErasedRecursive& param)
-    {
-    }
-
 public:
     virtual ~BookmarkNodeEvent() = default;
+
+    EVENT_DEF(BookmarkNode_NameChanged)
+    {
+        QString name;
+    };
+    EVENT_DEF(BookmarkNode_NameChangedRecursive)
+    {
+        std::shared_ptr<BookmarkNode> node;
+        QString name;
+    };
+    EVENT_DEF(BookmarkNode_ChildInserted)
+    {
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
+    EVENT_DEF(BookmarkNode_ChildInsertedRecursive)
+    {
+        std::shared_ptr<BookmarkNode> node;
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
+    EVENT_DEF(BookmarkNode_ChildErased)
+    {
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
+    EVENT_DEF(BookmarkNode_ChildErasedRecursive)
+    {
+        std::shared_ptr<BookmarkNode> node;
+        std::shared_ptr<BookmarkNode> child;
+        size_t index;
+    };
 };
 
 } // namespace core

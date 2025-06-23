@@ -28,8 +28,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::ReceiveEvent(const ctrl::BookmarkManagerEventParam::CurrentChanged& param
-)
+void MainWindow::ReceiveEvent(const BookmarkManagerEvent_CurrentChanged& param)
 {
     ui->actionDelete_Current->setEnabled(static_cast<bool>(param.currentNode));
 }

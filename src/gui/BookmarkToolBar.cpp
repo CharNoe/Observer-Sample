@@ -58,16 +58,14 @@ QAction* BookmarkToolBar::MakeAction(
     return factory.GetResult();
 }
 
-void BookmarkToolBar::ReceiveEvent(
-    const core::BookmarkNodeEventParam::ChildInserted& param
-)
+void BookmarkToolBar::ReceiveEvent(const BookmarkNode_ChildInserted& param)
 {
     auto actionList = actions();
     QAction* before = nullptr;
     insertAction(before, MakeAction(param.child, this));
 }
 
-void BookmarkToolBar::ReceiveEvent(const core::BookmarkNodeEventParam::ChildErased& param)
+void BookmarkToolBar::ReceiveEvent(const BookmarkNode_ChildErased& param)
 {
     auto actionList = actions();
     auto action = actionList[param.index];
@@ -87,15 +85,14 @@ BookmarkToolBar::FolderMenu::FolderMenu(
     // node が children を持っていたときの処理が必要だが、面倒なので省略
 }
 
-void BookmarkToolBar::FolderMenu::ReceiveEvent(
-    const core::BookmarkNodeEventParam::NameChanged& param
+void BookmarkToolBar::FolderMenu::ReceiveEvent(const BookmarkNode_NameChanged& param
 )
 {
     setTitle(param.name);
 }
 
 void BookmarkToolBar::FolderMenu::ReceiveEvent(
-    const core::BookmarkNodeEventParam::ChildInserted& param
+    const BookmarkNode_ChildInserted& param
 )
 {
     auto actionList = actions();
@@ -103,8 +100,7 @@ void BookmarkToolBar::FolderMenu::ReceiveEvent(
     insertAction(before, MakeAction(param.child, this));
 }
 
-void BookmarkToolBar::FolderMenu::ReceiveEvent(
-    const core::BookmarkNodeEventParam::ChildErased& param
+void BookmarkToolBar::FolderMenu::ReceiveEvent(const BookmarkNode_ChildErased& param
 )
 {
     auto actionList = actions();
@@ -131,16 +127,12 @@ void BookmarkToolBar::UrlAction::OnTriggered()
     QDesktopServices::openUrl(QUrl{m_url});
 }
 
-void BookmarkToolBar::UrlAction::ReceiveEvent(
-    const core::BookmarkNodeEventParam::NameChanged& param
-)
+void BookmarkToolBar::UrlAction::ReceiveEvent(const BookmarkNode_NameChanged& param)
 {
     setText(param.name);
 }
 
-void BookmarkToolBar::UrlAction::ReceiveEvent(
-    const core::BookmarkNode_UrlEventParam::UrlChanged& param
-)
+void BookmarkToolBar::UrlAction::ReceiveEvent(const BookmarkNode_Url_UrlChanged& param)
 {
     m_url = param.url;
 }

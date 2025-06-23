@@ -31,8 +31,8 @@ private:
 
     // BookmarkNodeEvent interface
 private:
-    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildInserted& param) override;
-    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildErased& param) override;
+    void ReceiveEvent(const BookmarkNode_ChildInserted& param) override;
+    void ReceiveEvent(const BookmarkNode_ChildErased& param) override;
 };
 
 class BookmarkToolBar::FolderMenu final
@@ -44,9 +44,9 @@ public:
 
     // BookmarkNodeEvent interface
 private:
-    void ReceiveEvent(const core::BookmarkNodeEventParam::NameChanged& param) override;
-    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildInserted& param) override;
-    void ReceiveEvent(const core::BookmarkNodeEventParam::ChildErased& param) override;
+    void ReceiveEvent(const BookmarkNode_NameChanged& param) override;
+    void ReceiveEvent(const BookmarkNode_ChildInserted& param) override;
+    void ReceiveEvent(const BookmarkNode_ChildErased& param) override;
 };
 
 class BookmarkToolBar::UrlAction final
@@ -64,11 +64,11 @@ private:
 
     // BookmarkNodeEvent interface
 private:
-    void ReceiveEvent(const core::BookmarkNodeEventParam::NameChanged& param) override;
+    void ReceiveEvent(const BookmarkNode_NameChanged& param) override;
 
     // BookmarkNode_UrlEvent interface
 public:
-    void ReceiveEvent(const core::BookmarkNode_UrlEventParam::UrlChanged& param) override;
+    void ReceiveEvent(const BookmarkNode_Url_UrlChanged& param) override;
 };
 
 } // namespace gui
