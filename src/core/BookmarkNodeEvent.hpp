@@ -44,7 +44,6 @@ struct BookmarkNodeEventParam
 
 class BookmarkNodeEvent
 {
-    friend class BookmarkNode;
     friend class EventAccess;
 
     virtual void ReceiveEvent(const BookmarkNodeEventParam::NameChanged& param)

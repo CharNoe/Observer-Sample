@@ -1,6 +1,7 @@
 #include "BookmarkItemModelTree.hpp"
 
 #include "core/BookmarkNode.hpp"
+#include "core/BookmarkNode_Url.hpp"
 
 namespace ctrl
 {
@@ -117,11 +118,81 @@ QVariant BookmarkItemModelTree::data(const QModelIndex& index, int role) const
         }
         break;
     }
+    case Column_Url:
+    {
+        auto urlNode = std::dynamic_pointer_cast<core::BookmarkNode_Url>(node);
+        if (urlNode)
+        {
+            if (role == Qt::DisplayRole || role == Qt::EditRole)
+                return urlNode->GetUrl();
+        }
+        break;
+    }
+
     default:
         break;
     } // switch (index.column())
 
     return {};
+}
+
+bool BookmarkItemModelTree::setData(
+    const QModelIndex& index, const QVariant& value, int role
+)
+{
+    if (!index.isValid())
+        return false;
+
+    auto node = GetBookmarkNode(index);
+    if (!node)
+        return false;
+
+    switch (index.column())
+    {
+    case Column_Name:
+    {
+        return node->SetName(value.toString());
+    }
+    case Column_Url:
+    {
+        auto urlNode = std::dynamic_pointer_cast<core::BookmarkNode_Url>(node);
+        if (urlNode)
+        {
+            return urlNode->SetUrl(value.toString());
+        }
+        break;
+    }
+    default:
+        break;
+    } // switch (index.column())
+
+    return {};
+}
+
+Qt::ItemFlags BookmarkItemModelTree::flags(const QModelIndex& index) const
+{
+    Qt::ItemFlags result = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    if (auto node = GetBookmarkNode(index))
+    {
+        switch (index.column())
+        {
+        case Column_Name:
+        {
+            result |= Qt::ItemIsEditable;
+            break;
+        }
+        case Column_Url:
+        {
+            if (node->GetKind() == core::BookmarkKind::Url)
+                result |= Qt::ItemIsEditable;
+            break;
+        }
+        default:
+            break;
+        } // switch (index.column())
+    }
+
+    return result;
 }
 
 auto BookmarkItemModelTree::MakeItemModelNode(

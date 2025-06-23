@@ -1,15 +1,22 @@
 #pragma once
 
 #include "core/BookmarkNode.hpp"
+#include "core/BookmarkNode_UrlEvent.hpp"
 
 namespace core {
 
 class BookmarkNode_Url final
     : public BookmarkNode
     , public std::enable_shared_from_this<BookmarkNode_Url>
+    , BookmarkNode_UrlEventParam
 {
 public:
     BookmarkNode_Url(QString name, QString url);
+
+    auto SetUrl(QString url) -> bool;
+    auto GetUrl() const -> QString;
+
+    EventSender<BookmarkNode_UrlEvent> eventSenderUrl;
 
 private:
     std::weak_ptr<BookmarkNode> m_parent;
@@ -28,6 +35,8 @@ private:
     std::shared_ptr<BookmarkNode> SharedFromThisImpl() override;
     std::shared_ptr<BookmarkNode> GetChildImpl(size_t index) const override;
     bool IsInsertableImpl(const BookmarkNode& node) override;
+    BookmarkKind GetKindImpl() const override;
+    void AcceptImpl(BookmarkNodeVisitor& visitor) override;
 };
 
 } // namespace core

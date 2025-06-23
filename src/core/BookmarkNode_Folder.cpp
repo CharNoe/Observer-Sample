@@ -1,5 +1,7 @@
 #include "BookmarkNode_Folder.hpp"
 
+#include "core/BookmarkNodeVisitor.hpp"
+
 namespace core {
 
 BookmarkNode_Folder::BookmarkNode_Folder(QString name)
@@ -66,6 +68,16 @@ std::shared_ptr<BookmarkNode> BookmarkNode_Folder::GetChildImpl(size_t index) co
 bool BookmarkNode_Folder::IsInsertableImpl(const BookmarkNode& node)
 {
     return true;
+}
+
+BookmarkKind BookmarkNode_Folder::GetKindImpl() const
+{
+    return BookmarkKind::Folder;
+}
+
+void BookmarkNode_Folder::AcceptImpl(BookmarkNodeVisitor& visitor)
+{
+    visitor.Visit(*this);
 }
 
 } // namespace core

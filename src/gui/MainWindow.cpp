@@ -3,6 +3,7 @@
 #include "ui_MainWindow.h"
 
 #include "ctrl/System.hpp"
+#include "gui/BookmarkToolBar.hpp"
 #include "gui/BookmarkTreeWidget.hpp"
 
 namespace gui {
@@ -14,6 +15,10 @@ MainWindow::MainWindow(const ctrl::System& system, QWidget* parent)
 {
     ui->setupUi(this);
     setCentralWidget(new BookmarkTreeWidget{m_system.GetBookmarkManager()});
+    addToolBar(
+        Qt::TopToolBarArea,
+        new BookmarkToolBar{m_system.GetBookmarkManager()->GetRootBookmarkBase(), this}
+    );
 
     system.GetBookmarkManager()->eventSender.ConnectQt(this);
 }

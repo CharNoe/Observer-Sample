@@ -33,6 +33,10 @@ qt_add_executable(observer_sample
     src/ctrl/BookmarkManager.hpp src/ctrl/BookmarkManager.cpp
     src/EventAccess.hpp
     src/ctrl/BookmarkManagerEvent.hpp
+    src/gui/BookmarkToolBar.hpp src/gui/BookmarkToolBar.cpp
+    src/core/BookmarkKind.hpp
+    src/core/BookmarkNode_UrlEvent.hpp
+    src/core/BookmarkNodeVisitor.hpp src/core/BookmarkNodeVisitor.cpp
 )
 
 target_link_libraries(observer_sample

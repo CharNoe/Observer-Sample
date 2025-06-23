@@ -32,18 +32,6 @@ public:
         -> std::shared_ptr<core::BookmarkNode>;
     auto GetRootNode() const -> std::shared_ptr<core::BookmarkNode>;
 
-    auto index(int row, int column, const QModelIndex& parent = QModelIndex()) const
-        -> QModelIndex override;
-    auto parent(const QModelIndex& index) const -> QModelIndex override;
-
-    auto rowCount(const QModelIndex& parent = QModelIndex()) const -> int override;
-    auto columnCount(const QModelIndex& parent = QModelIndex()) const -> int override;
-
-    auto headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole)
-        const -> QVariant override;
-    auto data(const QModelIndex& index, int role = Qt::DisplayRole) const
-        -> QVariant override;
-
 private:
     struct ItemModelNode
     {
@@ -69,6 +57,21 @@ private:
     ) override;
     void ReceiveEvent(const core::BookmarkNodeEventParam::ChildErasedRecursive& param
     ) override;
+
+    // QAbstractItemModel interface
+public:
+    auto index(int row, int column, const QModelIndex& parent = QModelIndex()) const
+        -> QModelIndex override;
+    auto parent(const QModelIndex& index) const -> QModelIndex override;
+    auto rowCount(const QModelIndex& parent = QModelIndex()) const -> int override;
+    auto columnCount(const QModelIndex& parent = QModelIndex()) const -> int override;
+    auto headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole)
+        const -> QVariant override;
+    auto data(const QModelIndex& index, int role = Qt::DisplayRole) const
+        -> QVariant override;
+    auto setData(const QModelIndex& index, const QVariant& value, int role)
+        -> bool override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
 };
 
 } // namespace ctrl

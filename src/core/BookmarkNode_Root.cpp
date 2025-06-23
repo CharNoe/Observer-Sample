@@ -1,5 +1,7 @@
 #include "BookmarkNode_Root.hpp"
 
+#include "core/BookmarkNodeVisitor.hpp"
+
 namespace core {
 
 BookmarkNode_Root::BookmarkNode_Root() {}
@@ -58,6 +60,16 @@ std::shared_ptr<BookmarkNode> BookmarkNode_Root::GetChildImpl(size_t index) cons
 bool BookmarkNode_Root::IsInsertableImpl(const BookmarkNode& node)
 {
     return true;
+}
+
+BookmarkKind BookmarkNode_Root::GetKindImpl() const
+{
+    return BookmarkKind::Root;
+}
+
+void BookmarkNode_Root::AcceptImpl(BookmarkNodeVisitor& visitor)
+{
+    visitor.Visit(*this);
 }
 
 } // namespace core

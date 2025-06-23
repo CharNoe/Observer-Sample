@@ -11,6 +11,11 @@ auto BookmarkNode::SharedFromThis() -> std::shared_ptr<BookmarkNode>
     return SharedFromThisImpl();
 }
 
+BookmarkKind BookmarkNode::GetKind() const
+{
+    return GetKindImpl();
+}
+
 bool BookmarkNode::SetName(const QString &name)
 {
     const bool isChanged = SetNameImpl(name);
@@ -82,6 +87,11 @@ std::shared_ptr<BookmarkNode> BookmarkNode::EraseChild(size_t index)
 auto BookmarkNode::GetChildrenSize() const -> size_t
 {
     return GetChildrenSizeImpl();
+}
+
+void BookmarkNode::Accept(BookmarkNodeVisitor& visitor)
+{
+    AcceptImpl(visitor);
 }
 
 template <class EventParam>
