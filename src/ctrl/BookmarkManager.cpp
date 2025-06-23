@@ -29,7 +29,7 @@ bool BookmarkManager::SetCurrentNode(std::shared_ptr<core::BookmarkNode> current
 
     m_currentNode = std::move(currentNode);
     CurrentChanged param{m_currentNode};
-    eventSender(param);
+    SendEvent(&eventSender, param);
     return true;
 }
 

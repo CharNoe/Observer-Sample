@@ -20,7 +20,7 @@ MainWindow::MainWindow(const ctrl::System& system, QWidget* parent)
         new BookmarkToolBar{m_system.GetBookmarkManager()->GetRootBookmarkBase(), this}
     );
 
-    system.GetBookmarkManager()->eventSender.ConnectQt(this);
+    ConnectQt(system.GetBookmarkManager()->eventSender, this);
 }
 
 MainWindow::~MainWindow()

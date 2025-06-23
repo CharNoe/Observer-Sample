@@ -12,7 +12,7 @@ BookmarkItemModelTree::BookmarkItemModelTree(
     : QAbstractItemModel(parent)
     , m_rootNode{MakeItemModelNode(std::move(rootNode))}
 {
-    m_rootNode->bookmarkNode->eventSender.ConnectQt(this);
+    ConnectQt(m_rootNode->bookmarkNode->eventSender, this);
 }
 
 QModelIndex BookmarkItemModelTree::GetModelIndex(

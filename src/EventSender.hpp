@@ -5,70 +5,56 @@
 #include <sigslot/signal.hpp>
 
 template <class Event>
-class EventSender final
+class EventSender
 {
-public:
-    auto Connect(std::shared_ptr<Event> receiver) -> sigslot::connection;
-    auto Disconnect(std::shared_ptr<Event> receiver) -> size_t;
-    template <class Type>
-    auto ConnectQt(Type* receiver) -> sigslot::connection;
-    auto DisconnectQt(QObject* receiver) -> size_t;
+    template <class EventType, class DerivType>
+    friend auto Connect(
+        EventSender<EventType>& sender, std::shared_ptr<DerivType> receiver
+    ) -> sigslot::connection;
 
-    template <class EventParam>
-    void operator()(const EventParam& param);
+    template <class EventType, class DerivType>
+    friend auto ConnectQt(EventSender<EventType>& sender, DerivType* receiver)
+        -> sigslot::connection;
+
+    template <class EventType, class EventParam>
+    friend void SendEvent(EventSender<EventType>* sender, const EventParam& param);
 
 private:
-    struct Slot;
     using UpdateFunc = void (*)(Event&, const void*);
+    struct Slot
+    {
+        Event* event;
+        void operator()(UpdateFunc func, const void* param)
+        {
+            func(*event, param);
+        }
+    };
 
     sigslot::signal_st<UpdateFunc, const void*> m_sig;
 };
 
-template <class Event>
-struct EventSender<Event>::Slot
+template <class EventType, class DerivType>
+auto Connect(EventSender<EventType>& sender, std::shared_ptr<DerivType> receiver)
+    -> sigslot::connection
 {
-    Event* event;
-    void operator()(UpdateFunc func, const void* param)
+    typename EventSender<EventType>::Slot slot{receiver.get()};
+    return sender.m_sig.connect(slot, std::move(receiver));
+}
+
+template <class EventType, class DerivType>
+auto ConnectQt(EventSender<EventType>& sender, DerivType* receiver) -> sigslot::connection
+{
+    typename EventSender<EventType>::Slot slot{receiver};
+    return sender.m_sig.connect(slot, static_cast<QObject*>(receiver));
+}
+
+template <class EventType, class EventParam>
+void SendEvent(EventSender<EventType>* sender, const EventParam& param)
+{
+    auto func = [](EventType& event, const void* param)
     {
-        func(*event, param);
-    }
-};
-
-template <class Event>
-auto EventSender<Event>::Connect(std::shared_ptr<Event> receiver) -> sigslot::connection
-{
-    Slot slot{receiver.get()};
-    return m_sig.connect(slot, std::move(receiver));
-}
-
-template <class Event>
-auto EventSender<Event>::Disconnect(std::shared_ptr<Event> receiver) -> size_t
-{
-    return m_sig.disconnect(receiver);
-}
-
-template <class Event>
-template <class Type>
-sigslot::connection EventSender<Event>::ConnectQt(Type* receiver)
-{
-    Slot slot{receiver};
-    return m_sig.connect(slot, static_cast<QObject*>(receiver));
-}
-
-template <class Event>
-size_t EventSender<Event>::DisconnectQt(QObject* receiver)
-{
-    return m_sig.disconnect(receiver);
-}
-
-template <class Event>
-template <class EventParam>
-void EventSender<Event>::operator()(const EventParam& param)
-{
-    auto func = [](Event& event, const void* param)
-    {
-        auto func = EventAccess::GetReceiveEventPtr<Event, EventParam>();
+        auto func = EventAccess::GetReceiveEventPtr<EventType, EventParam>();
         (event.*func)(*static_cast<const EventParam*>(param));
     };
-    m_sig(func, &param);
+    sender->m_sig(func, &param);
 }

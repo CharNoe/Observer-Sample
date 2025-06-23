@@ -46,7 +46,7 @@ BookmarkToolBar::BookmarkToolBar(
 )
     : QToolBar(tr("Bookmark"), parent)
 {
-    rootNode->eventSender.ConnectQt(this);
+    ConnectQt(rootNode->eventSender, this);
 }
 
 QAction* BookmarkToolBar::MakeAction(
@@ -83,7 +83,7 @@ BookmarkToolBar::FolderMenu::FolderMenu(
 )
     : QMenu{node->GetName(), parent}
 {
-    node->eventSender.ConnectQt(this);
+    ConnectQt(node->eventSender, this);
     // node が children を持っていたときの処理が必要だが、面倒なので省略
 }
 
@@ -122,8 +122,8 @@ BookmarkToolBar::UrlAction::UrlAction(
     : QAction{node->GetName(), parent}
 {
     connect(this, &QAction::triggered, this, &UrlAction::OnTriggered);
-    node->eventSender.ConnectQt(this);
-    node->eventSenderUrl.ConnectQt(this);
+    ConnectQt(node->eventSender, this);
+    ConnectQt(node->eventSenderUrl, this);
 }
 
 void BookmarkToolBar::UrlAction::OnTriggered()
