@@ -8,7 +8,7 @@ namespace core {
 
 class BookmarkNodeVisitor;
 
-class BookmarkNode
+class BookmarkNode : public EventSender<BookmarkNodeEvent>
 {
 public:
     BookmarkNode();
@@ -27,11 +27,10 @@ public:
     auto InsertChild(std::shared_ptr<BookmarkNode> child, size_t index) -> bool;
     auto PushChild(std::shared_ptr<BookmarkNode> child) -> bool;
     auto EraseChild(size_t index) -> std::shared_ptr<BookmarkNode>;
+    auto EraseChild(std::shared_ptr<BookmarkNode> child) -> bool;
     auto GetChildrenSize() const -> size_t;
 
     void Accept(BookmarkNodeVisitor& visitor);
-
-    EventSender<BookmarkNodeEvent> eventSender;
 
 private:
     virtual auto SharedFromThisImpl() -> std::shared_ptr<BookmarkNode> = 0;

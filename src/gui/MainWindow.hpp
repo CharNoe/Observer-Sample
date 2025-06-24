@@ -25,12 +25,16 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+    void DeleteCurrentBookmark();
+    void DeleteSelectBookmark();
+
+    Ui::MainWindow* ui;
     const ctrl::System& m_system;
 
     // BookmarkManagerEvent interface
 private:
-    void ReceiveEvent(const BookmarkManagerEvent_CurrentChanged& param) override;
+    void ReceiveEvent(const BookmarkManager_CurrentChanged& param) override;
+    void ReceiveEvent(const BookmarkManager_SelectChanged& param) override;
 };
 
 } // namespace gui

@@ -3,7 +3,9 @@
 #include "core/BookmarkNodeVisitor.hpp"
 #include "core/BookmarkNode_Folder.hpp"
 #include "core/BookmarkNode_Url.hpp"
+#include "ctrl/BookmarkManager.hpp"
 #include <QDesktopServices>
+#include <QInputDialog>
 #include <QUrl>
 
 namespace gui
@@ -42,11 +44,16 @@ public:
 };
 
 BookmarkToolBar::BookmarkToolBar(
-    std::shared_ptr<core::BookmarkNode> rootNode, QWidget* parent
+    std::shared_ptr<ctrl::BookmarkManager> bookmarkManager, QWidget* parent
 )
-    : QToolBar(tr("Bookmark"), parent)
+    : QToolBar(tr("ToolBar"), parent)
+    , m_bookmarkManager{std::move(bookmarkManager)}
+    , m_childrenSize{0}
 {
-    ConnectQt(rootNode->eventSender, this);
+    ConnectQt(*m_bookmarkManager->GetRootBookmarkBase(), this);
+    auto action = addAction(tr("Add"));
+    connect(action, &QAction::triggered, this, &BookmarkToolBar::PushAction);
+    addSeparator();
 }
 
 QAction* BookmarkToolBar::MakeAction(
@@ -58,21 +65,46 @@ QAction* BookmarkToolBar::MakeAction(
     return factory.GetResult();
 }
 
+void BookmarkToolBar::PushAction()
+{
+    QString name = QInputDialog::getText(this, tr("Add Url"), tr("Name"));
+    if (name.isEmpty())
+        return;
+
+    auto node = std::make_shared<core::BookmarkNode_Url>(std::move(name), "");
+    auto target = m_bookmarkManager->GetCurrentNode();
+    if (!target)
+        target = m_bookmarkManager->GetRootBookmarkBase();
+
+    while (target)
+    {
+        if (target->IsInsertable(*node))
+        {
+            target->PushChild(node);
+            return;
+        }
+        target = target->GetParent();
+    }
+}
+
 void BookmarkToolBar::ReceiveEvent(const BookmarkNode_ChildInserted& param)
 {
     auto actionList = actions();
-    QAction* before = nullptr;
+    QAction* before =
+        (m_childrenSize == param.index) ? nullptr : actionList[param.index + 2];
     insertAction(before, MakeAction(param.child, this));
+    ++m_childrenSize;
 }
 
 void BookmarkToolBar::ReceiveEvent(const BookmarkNode_ChildErased& param)
 {
     auto actionList = actions();
-    auto action = actionList[param.index];
+    auto action = actionList[param.index + 2];
     if (action)
     {
         action->deleteLater();
         removeAction(action);
+        --m_childrenSize;
     }
 }
 
@@ -80,8 +112,9 @@ BookmarkToolBar::FolderMenu::FolderMenu(
     std::shared_ptr<core::BookmarkNode> node, QWidget* parent
 )
     : QMenu{node->GetName(), parent}
+    , m_childrenSize{0}
 {
-    ConnectQt(node->eventSender, this);
+    ConnectQt(*node, this);
     // node が children を持っていたときの処理が必要だが、面倒なので省略
 }
 
@@ -96,8 +129,9 @@ void BookmarkToolBar::FolderMenu::ReceiveEvent(
 )
 {
     auto actionList = actions();
-    QAction* before = nullptr;
+    QAction* before = (m_childrenSize == param.index) ? nullptr : actionList[param.index];
     insertAction(before, MakeAction(param.child, this));
+    ++m_childrenSize;
 }
 
 void BookmarkToolBar::FolderMenu::ReceiveEvent(const BookmarkNode_ChildErased& param
@@ -109,6 +143,7 @@ void BookmarkToolBar::FolderMenu::ReceiveEvent(const BookmarkNode_ChildErased& p
     {
         action->deleteLater();
         removeAction(action);
+        --m_childrenSize;
     }
 }
 
@@ -118,8 +153,8 @@ BookmarkToolBar::UrlAction::UrlAction(
     : QAction{node->GetName(), parent}
 {
     connect(this, &QAction::triggered, this, &UrlAction::OnTriggered);
-    ConnectQt(node->eventSender, this);
-    ConnectQt(node->eventSenderUrl, this);
+    ConnectQt<BookmarkNodeEvent>(*node, this);
+    ConnectQt<BookmarkNode_UrlEvent>(*node, this);
 }
 
 void BookmarkToolBar::UrlAction::OnTriggered()

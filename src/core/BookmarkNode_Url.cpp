@@ -18,7 +18,7 @@ bool BookmarkNode_Url::SetUrl(QString url)
 
     m_url = std::move(url);
     BookmarkNode_UrlEvent::BookmarkNode_Url_UrlChanged param{m_url};
-    SendEvent(&eventSenderUrl, param);
+    SendEvent<BookmarkNode_UrlEvent>(this, param);
     return true;
 }
 

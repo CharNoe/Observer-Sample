@@ -7,6 +7,7 @@ namespace core {
 
 class BookmarkNode_Url final
     : public BookmarkNode
+    , public EventSender<BookmarkNode_UrlEvent>
     , public std::enable_shared_from_this<BookmarkNode_Url>
 {
 public:
@@ -14,8 +15,6 @@ public:
 
     auto SetUrl(QString url) -> bool;
     auto GetUrl() const -> QString;
-
-    EventSender<BookmarkNode_UrlEvent> eventSenderUrl;
 
 private:
     std::weak_ptr<BookmarkNode> m_parent;

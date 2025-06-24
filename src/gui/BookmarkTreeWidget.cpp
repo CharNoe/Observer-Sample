@@ -21,14 +21,17 @@ BookmarkTreeWidget::BookmarkTreeWidget(
 {
     ui->setupUi(this);
     ui->treeView->setModel(m_model);
+    const auto connectAction = [this](QAction* action, auto func)
+    {
+        connect(action, &QAction::triggered, this, func);
+    };
+    connectAction(ui->actionAddUrl, &BookmarkTreeWidget::AddBookmarkUrl);
+    connectAction(ui->action_AddFolder, &BookmarkTreeWidget::AddBookmarkFolder);
     connect(
-        ui->actionAddUrl, &QAction::triggered, this, &BookmarkTreeWidget::AddBookmarkUrl
-    );
-    connect(
-        ui->action_AddFolder,
-        &QAction::triggered,
+        ui->deleteButton,
+        &QAbstractButton::clicked,
         this,
-        &BookmarkTreeWidget::AddBookmarkFolder
+        &BookmarkTreeWidget::DeleteSelectBookmarks
     );
     connect(
         ui->treeView->selectionModel(),
@@ -36,6 +39,14 @@ BookmarkTreeWidget::BookmarkTreeWidget(
         this,
         &BookmarkTreeWidget::OnCurrentIndexChanged
     );
+    connect(
+        ui->treeView->selectionModel(),
+        &QItemSelectionModel::selectionChanged,
+        this,
+        &BookmarkTreeWidget::OnSelectionIndexChanged
+    );
+    ConnectQt(*m_bookmarkManager, this);
+    m_bookmarkManager->CallReceiveEvent(*this);
 
     ui->addButton->addAction(ui->actionAddUrl);
     ui->addButton->addAction(ui->action_AddFolder);
@@ -52,6 +63,24 @@ void BookmarkTreeWidget::OnCurrentIndexChanged(
 {
     auto node = m_model->GetBookmarkNode(after);
     m_bookmarkManager->SetCurrentNode(std::move(node));
+}
+
+void BookmarkTreeWidget::OnSelectionIndexChanged(
+    const QItemSelection& selected, const QItemSelection& deselected
+)
+{
+    auto indexes = ui->treeView->selectionModel()->selectedRows();
+
+    std::vector<std::shared_ptr<core::BookmarkNode>> selectNodes;
+    for (const auto& index : indexes)
+    {
+        if (auto node = m_model->GetBookmarkNode(index))
+        {
+            selectNodes.emplace_back(std::move(node));
+        }
+    }
+
+    m_bookmarkManager->SetSelectNodes(std::move(selectNodes));
 }
 
 void BookmarkTreeWidget::AddBookmarkUrl()
@@ -96,6 +125,16 @@ void BookmarkTreeWidget::AddBookmark(std::shared_ptr<core::BookmarkNode> node)
         }
         target = target->GetParent();
     }
+}
+
+void BookmarkTreeWidget::DeleteSelectBookmarks()
+{
+    m_bookmarkManager->DeleteSelectNodes();
+}
+
+void BookmarkTreeWidget::ReceiveEvent(const BookmarkManager_SelectChanged& param)
+{
+    ui->deleteButton->setEnabled(!param.selectNodes.empty());
 }
 
 } // namespace gui

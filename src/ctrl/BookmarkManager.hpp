@@ -13,7 +13,7 @@ class BookmarkNode;
 namespace ctrl
 {
 
-class BookmarkManager final
+class BookmarkManager final : public EventSender<BookmarkManagerEvent>
 {
 public:
     BookmarkManager();
@@ -24,11 +24,20 @@ public:
     auto SetCurrentNode(std::shared_ptr<core::BookmarkNode> currentNode) -> bool;
     auto GetCurrentNode() const -> std::shared_ptr<core::BookmarkNode>;
 
-    EventSender<BookmarkManagerEvent> eventSender;
+    auto SetSelectNodes(std::vector<std::shared_ptr<core::BookmarkNode>> selectNodes)
+        -> bool;
+    auto GetSelectNodes() const
+        -> const std::vector<std::shared_ptr<core::BookmarkNode>>&;
+
+    auto DeleteCurrentNode() -> bool;
+    auto DeleteSelectNodes() -> size_t;
+
+    void CallReceiveEvent(BookmarkManagerEvent& receiver) const;
 
 private:
     const std::shared_ptr<core::BookmarkNode_Root> m_rootBookmark;
     std::shared_ptr<core::BookmarkNode> m_currentNode;
+    std::vector<std::shared_ptr<core::BookmarkNode>> m_selectNodes;
 };
 
 } // namespace ctrl

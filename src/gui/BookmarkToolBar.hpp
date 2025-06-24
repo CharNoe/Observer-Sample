@@ -9,6 +9,10 @@ namespace core
 {
 class BookmarkNode_Url;
 } // namespace core
+namespace ctrl
+{
+class BookmarkManager;
+} // namespace ctrl
 
 namespace gui
 {
@@ -19,7 +23,7 @@ class BookmarkToolBar final
 {
 public:
     BookmarkToolBar(
-        std::shared_ptr<core::BookmarkNode> rootNode, QWidget* parent = nullptr
+        std::shared_ptr<ctrl::BookmarkManager> bookmarkManager, QWidget* parent = nullptr
     );
 
 private:
@@ -28,6 +32,10 @@ private:
     class ActionFactory;
 
     static QAction* MakeAction(std::shared_ptr<core::BookmarkNode> node, QWidget* parent);
+    void PushAction();
+
+    const std::shared_ptr<ctrl::BookmarkManager> m_bookmarkManager;
+    size_t m_childrenSize;
 
     // BookmarkNodeEvent interface
 private:
@@ -41,6 +49,9 @@ class BookmarkToolBar::FolderMenu final
 {
 public:
     FolderMenu(std::shared_ptr<core::BookmarkNode> node, QWidget* parent);
+
+private:
+    size_t m_childrenSize;
 
     // BookmarkNodeEvent interface
 private:
