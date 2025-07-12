@@ -2,6 +2,8 @@
 
 #include "core/BookmarkNode.hpp"
 #include "core/BookmarkNode_Url.hpp"
+#include <QApplication>
+#include <QStyle>
 
 namespace ctrl
 {
@@ -115,6 +117,11 @@ QVariant BookmarkItemModelTree::data(const QModelIndex& index, int role) const
         if (role == Qt::DisplayRole || role == Qt::EditRole)
         {
             return node->GetName();
+        }
+        if (role == Qt::DecorationRole)
+        {
+            if (node->GetKind() == core::BookmarkKind::Folder)
+                return QApplication::style()->standardIcon(QStyle::SP_DirIcon);
         }
         break;
     }

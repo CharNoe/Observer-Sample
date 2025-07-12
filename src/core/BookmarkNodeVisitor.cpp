@@ -3,8 +3,4 @@
 namespace core
 {
 
-BookmarkNodeVisitor::BookmarkNodeVisitor()
-{
-}
-
 } // namespace core

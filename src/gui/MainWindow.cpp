@@ -3,9 +3,11 @@
 
 #include "ctrl/BookmarkManager.hpp"
 #include "ctrl/System.hpp"
+#include "gui/BookmarkEditor.hpp"
 #include "gui/BookmarkToolBar.hpp"
 #include "gui/BookmarkTreeWidget.hpp"
 #include <QApplication>
+#include <QDockWidget>
 
 namespace gui {
 
@@ -20,6 +22,12 @@ MainWindow::MainWindow(const ctrl::System& system, QWidget* parent)
         auto toolBar = new BookmarkToolBar{m_system.GetBookmarkManager(), this};
         ui->menu_View->addAction(toolBar->toggleViewAction());
         addToolBar(Qt::TopToolBarArea, toolBar);
+    }
+    {
+        auto dock = new QDockWidget{tr("Editor"), this};
+        dock->setWidget(new BookmarkEditor{m_system.GetBookmarkManager()});
+        ui->menu_View->addAction(dock->toggleViewAction());
+        addDockWidget(Qt::RightDockWidgetArea, dock);
     }
 
     ConnectQt(*system.GetBookmarkManager(), this);

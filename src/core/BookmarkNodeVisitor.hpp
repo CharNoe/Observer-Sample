@@ -10,7 +10,7 @@ class BookmarkNode_Url;
 class BookmarkNodeVisitor
 {
 public:
-    BookmarkNodeVisitor();
+    BookmarkNodeVisitor() = default;
     virtual ~BookmarkNodeVisitor() = default;
 
     virtual void Visit(BookmarkNode_Root& node) = 0;

@@ -5,6 +5,7 @@
 #include "core/BookmarkNode_Url.hpp"
 #include "ctrl/BookmarkItemModelTree.hpp"
 #include "ctrl/BookmarkManager.hpp"
+#include "gui/BookmarkUrlFactoryDialog.hpp"
 #include <QInputDialog>
 
 namespace gui {
@@ -85,11 +86,9 @@ void BookmarkTreeWidget::OnSelectionIndexChanged(
 
 void BookmarkTreeWidget::AddBookmarkUrl()
 {
-    QString name = QInputDialog::getText(this, tr("Add Url"), tr("Name"));
-    if (name.isEmpty())
+    auto node = BookmarkUrlFactoryDialog::Execute(this);
+    if (!node)
         return;
-
-    auto node = std::make_shared<core::BookmarkNode_Url>(std::move(name), "");
     AddBookmark(std::move(node));
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EventBase.hpp"
 #include "EventMacro.hpp"
 #include <QString>
 
@@ -8,7 +9,7 @@ namespace core
 
 class BookmarkNode;
 
-class BookmarkNodeEvent
+class BookmarkNodeEvent : public EventBase
 {
     friend class EventAccess;
 

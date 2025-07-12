@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EventBase.hpp"
 #include "EventMacro.hpp"
 #include <memory>
 #include <vector>
@@ -12,7 +13,7 @@ class BookmarkNode;
 namespace ctrl
 {
 
-class BookmarkManagerEvent
+class BookmarkManagerEvent : public EventBase
 {
     friend class EventAccess;
     friend class BookmarkManager;

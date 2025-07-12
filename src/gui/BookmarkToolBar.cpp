@@ -4,6 +4,7 @@
 #include "core/BookmarkNode_Folder.hpp"
 #include "core/BookmarkNode_Url.hpp"
 #include "ctrl/BookmarkManager.hpp"
+#include "gui/BookmarkUrlFactoryDialog.hpp"
 #include <QDesktopServices>
 #include <QInputDialog>
 #include <QUrl>
@@ -67,11 +68,10 @@ QAction* BookmarkToolBar::MakeAction(
 
 void BookmarkToolBar::PushAction()
 {
-    QString name = QInputDialog::getText(this, tr("Add Url"), tr("Name"));
-    if (name.isEmpty())
+    auto node = BookmarkUrlFactoryDialog::Execute(this);
+    if (!node)
         return;
 
-    auto node = std::make_shared<core::BookmarkNode_Url>(std::move(name), "");
     auto target = m_bookmarkManager->GetCurrentNode();
     if (!target)
         target = m_bookmarkManager->GetRootBookmarkBase();
@@ -151,6 +151,7 @@ BookmarkToolBar::UrlAction::UrlAction(
     std::shared_ptr<core::BookmarkNode_Url> node, QObject* parent
 )
     : QAction{node->GetName(), parent}
+    , m_url{node->GetUrl()}
 {
     connect(this, &QAction::triggered, this, &UrlAction::OnTriggered);
     ConnectQt<BookmarkNodeEvent>(*node, this);

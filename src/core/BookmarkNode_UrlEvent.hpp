@@ -1,12 +1,13 @@
 #pragma once
 
+#include "EventBase.hpp"
 #include "EventMacro.hpp"
 #include <QString>
 
 namespace core
 {
 
-class BookmarkNode_UrlEvent
+class BookmarkNode_UrlEvent : public EventBase
 {
     friend class EventAccess;
 
