@@ -2,6 +2,9 @@
 
 #include "EventAccess.hpp"
 #include "EventBase.hpp"
+#include "EventConnection.hpp"
+#include <boost/signals2.hpp>
+#include <qdebug.h>
 #include <sigslot/adapter/qt.hpp>
 #include <sigslot/signal.hpp>
 
@@ -11,7 +14,7 @@ class EventSender
     template <class EventType, class DerivType>
     friend auto Connect(
         EventSender<EventType>& sender, std::shared_ptr<DerivType> receiver
-    ) -> sigslot::connection;
+    ) -> EventConnection;
 
     template <class EventType, class DerivType>
     friend void AutoConnect(
@@ -21,7 +24,7 @@ class EventSender
 
     template <class EventType, class DerivType>
     friend auto ConnectQt(EventSender<EventType>& sender, DerivType* receiver)
-        -> sigslot::connection;
+        -> EventConnection;
 
     template <class EventType, class DerivType>
     friend void AutoConnectQt(
@@ -42,12 +45,13 @@ private:
         }
     };
 
-    sigslot::signal_st<UpdateFunc, const void*> m_sig;
+    // sigslot::signal_st<UpdateFunc, const void*> m_sig;
+    boost::signals2::signal<void(UpdateFunc, const void*)> m_sig;
 };
 
 template <class EventType, class DerivType>
 auto Connect(EventSender<EventType>& sender, std::shared_ptr<DerivType> receiver)
-    -> sigslot::connection
+    -> EventConnection
 {
     typename EventSender<EventType>::Slot slot{receiver.get()};
     return sender.m_sig.connect(slot, std::move(receiver));
@@ -74,10 +78,11 @@ void AutoConnect(
 }
 
 template <class EventType, class DerivType>
-auto ConnectQt(EventSender<EventType>& sender, DerivType* receiver) -> sigslot::connection
+auto ConnectQt(EventSender<EventType>& sender, DerivType* receiver) -> EventConnection
 {
     typename EventSender<EventType>::Slot slot{receiver};
-    return sender.m_sig.connect(slot, static_cast<QObject*>(receiver));
+    // return sender.m_sig.connect(slot, static_cast<QObject*>(receiver));
+    return sender.m_sig.connect(slot);
 }
 
 template <class EventType, class DerivType>
@@ -89,7 +94,8 @@ void AutoConnectQt(
     if (sender)
     {
         typename EventSender<EventType>::Slot slot{receiver};
-        auto connection = sender->m_sig.connect(slot, static_cast<QObject*>(receiver));
+        // auto connection = sender->m_sig.connect(slot, static_cast<QObject*>(receiver));
+        auto connection = sender->m_sig.connect(slot);
         detail::SetDefaultConnection(
             *static_cast<EventType*>(receiver), std::move(connection)
         );

@@ -3,7 +3,7 @@
 namespace detail
 {
 
-void SetDefaultConnection(EventBase& event, sigslot::connection connection)
+void SetDefaultConnection(EventBase& event, EventConnection connection)
 {
     event.m_defaultConnection.disconnect();
     event.m_defaultConnection = std::move(connection);

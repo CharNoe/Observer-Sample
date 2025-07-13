@@ -9,7 +9,13 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/palacaze/sigslot
   GIT_TAG        19a6f0f5ea11fc121fe67f81fd5e491f2d7a4637 # v1.2.0
 )
-FetchContent_MakeAvailable(sigslot)
+FetchContent_Declare(
+  Boost
+  GIT_REPOSITORY https://github.com/boostorg/boost.git
+  GIT_TAG boost-1.80.0
+  GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(sigslot Boost)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -37,12 +43,12 @@ qt_add_executable(observer_sample
     src/core/BookmarkKind.hpp
     src/core/BookmarkNode_UrlEvent.hpp
     src/core/BookmarkNodeVisitor.hpp src/core/BookmarkNodeVisitor.cpp
-    src/HasConnection.hpp
     src/EventMacro.hpp
     src/gui/BookmarkUrlFactoryDialog.hpp src/gui/BookmarkUrlFactoryDialog.cpp src/gui/BookmarkUrlFactoryDialog.ui
     src/gui/BookmarkEditor.hpp src/gui/BookmarkEditor.cpp src/gui/BookmarkEditor.ui
     src/EventBase.hpp
     src/EventBase.cpp
+    src/EventConnection.hpp
 )
 
 target_link_libraries(observer_sample
@@ -50,6 +56,7 @@ target_link_libraries(observer_sample
         Qt::Core
         Qt::Widgets
         Pal::Sigslot
+        Boost::signals2
 )
 target_include_directories(observer_sample
     PUBLIC src

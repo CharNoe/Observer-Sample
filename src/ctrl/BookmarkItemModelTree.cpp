@@ -12,8 +12,17 @@ BookmarkItemModelTree::BookmarkItemModelTree(
     std::shared_ptr<core::BookmarkNode> rootNode, QObject* parent
 )
     : QAbstractItemModel(parent)
-    , m_rootNode{MakeItemModelNode(std::move(rootNode))}
+    , m_rootNode{new ItemModelNode{}}
 {
+    const size_t childrenSize = rootNode->GetChildrenSize();
+    m_rootNode->children.reserve(childrenSize);
+
+    for (size_t i = 0; i < childrenSize; ++i)
+    {
+        auto childNode = rootNode->GetChild(i);
+        m_rootNode->children.push_back(MakeItemModelNode(std::move(childNode)));
+    }
+    m_rootNode->bookmarkNode = std::move(rootNode);
     ConnectQt(*m_rootNode->bookmarkNode, this);
 }
 
@@ -24,19 +33,27 @@ QModelIndex BookmarkItemModelTree::GetModelIndex(
     const auto [itemModelNode, row] = FindItemModelNode(node);
     if (!itemModelNode || itemModelNode == m_rootNode.get())
         return {};
-    return createIndex(row, column, itemModelNode);
+    return createIndex(row, column, ToInternalId(node));
 }
 
 std::shared_ptr<core::BookmarkNode> BookmarkItemModelTree::GetBookmarkNode(
     const QModelIndex& index
 ) const
 {
-    return GetItemModelNode(index)->bookmarkNode;
+    auto ptr = GetItemModelNode(index);
+    return ptr->bookmarkNode;
 }
 
 auto BookmarkItemModelTree::GetRootNode() const -> std::shared_ptr<core::BookmarkNode>
 {
     return m_rootNode->bookmarkNode;
+}
+
+quintptr BookmarkItemModelTree::ToInternalId(
+    const std::shared_ptr<core::BookmarkNode>& bookmarkNode
+)
+{
+    return reinterpret_cast<quintptr>(bookmarkNode.get());
 }
 
 QVariant BookmarkItemModelTree::headerData(
@@ -74,9 +91,9 @@ QModelIndex BookmarkItemModelTree::index(int row, int column, const QModelIndex&
     {
         return {};
     }
-    const auto itemModelNode = GetItemModelNode(parent);
-    ItemModelNode* childNode = itemModelNode->children[static_cast<size_t>(row)].get();
-    return createIndex(row, column, childNode);
+    const ItemModelNode* itemModelNode = GetItemModelNode(parent);
+    const quintptr childId = itemModelNode->children[static_cast<size_t>(row)];
+    return createIndex(row, column, childId);
 }
 
 QModelIndex BookmarkItemModelTree::parent(const QModelIndex& index) const
@@ -204,25 +221,32 @@ Qt::ItemFlags BookmarkItemModelTree::flags(const QModelIndex& index) const
 
 auto BookmarkItemModelTree::MakeItemModelNode(
     std::shared_ptr<core::BookmarkNode> bookmarkNode
-) -> std::unique_ptr<ItemModelNode>
+) -> quintptr
 {
-    std::unique_ptr<ItemModelNode> itemModelNode = std::make_unique<ItemModelNode>();
+    auto id = reinterpret_cast<quintptr>(bookmarkNode.get());
+    auto& itemModelNode = m_nodeMap[id];
+
     const size_t childrenSize = bookmarkNode->GetChildrenSize();
+    itemModelNode.children.reserve(childrenSize);
+
     for (size_t i = 0; i < childrenSize; ++i)
     {
         auto childNode = bookmarkNode->GetChild(i);
-        itemModelNode->children.push_back(MakeItemModelNode(std::move(childNode)));
+        itemModelNode.children.push_back(MakeItemModelNode(std::move(childNode)));
     }
-    itemModelNode->bookmarkNode = std::move(bookmarkNode);
+    itemModelNode.bookmarkNode = std::move(bookmarkNode);
 
-    return itemModelNode;
+    return id;
 }
 
 auto BookmarkItemModelTree::GetItemModelNode(const QModelIndex& index) const
     -> const ItemModelNode*
 {
-    auto nodePtr = static_cast<ItemModelNode*>(index.internalPointer());
-    return nodePtr ? nodePtr : m_rootNode.get();
+    const auto nodeIt = m_nodeMap.find(index.internalId());
+    if (nodeIt == m_nodeMap.end())
+        return m_rootNode.get();
+    else
+        return &nodeIt->second;
 }
 
 auto BookmarkItemModelTree::FindItemModelNode(
@@ -239,17 +263,21 @@ auto BookmarkItemModelTree::FindItemModelNode(
     if (!parentItemModelNode)
         return {nullptr, -1};
 
-    auto it = std::ranges::find_if(
+    const auto internalId = ToInternalId(bookmarkNode);
+    const auto childIt = std::ranges::find_if(
         parentItemModelNode->children,
-        [&bookmarkNode](const std::unique_ptr<ItemModelNode>& itemModelNode)
-        { return itemModelNode->bookmarkNode == bookmarkNode; }
+        [internalId](quintptr child) { return child == internalId; }
     );
-    if (it == parentItemModelNode->children.end())
+    if (childIt == parentItemModelNode->children.end())
+        return {nullptr, -1};
+
+    const auto nodeIt = m_nodeMap.find(internalId);
+    if (nodeIt == m_nodeMap.end())
         return {nullptr, -1};
 
     const auto row =
-        static_cast<int>(std::distance(parentItemModelNode->children.begin(), it));
-    return {it->get(), row};
+        static_cast<int>(std::distance(parentItemModelNode->children.begin(), childIt));
+    return {&(nodeIt->second), row};
 }
 
 auto BookmarkItemModelTree::FindItemModelNode(
@@ -298,6 +326,7 @@ void BookmarkItemModelTree::ReceiveEvent(
     ItemModelNode* itemModelNode = FindItemModelNode(param.node).first;
     itemModelNode->children.erase(std::next(itemModelNode->children.begin(), param.index)
     );
+    m_nodeMap.erase(ToInternalId(param.child));
     endRemoveRows();
 }
 

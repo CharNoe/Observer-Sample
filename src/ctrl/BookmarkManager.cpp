@@ -81,6 +81,11 @@ size_t BookmarkManager::DeleteSelectNodes()
 
     std::vector<std::shared_ptr<core::BookmarkNode>> selectNodes;
     std::swap(m_selectNodes, selectNodes);
+    {
+        BookmarkManagerEvent::BookmarkManager_SelectChanged param{m_selectNodes};
+        SendEvent(this, param);
+    }
+
     for (const auto& selectNode : selectNodes)
     {
         auto parentNode = selectNode->GetParent();
@@ -93,8 +98,6 @@ size_t BookmarkManager::DeleteSelectNodes()
         }
     }
 
-    BookmarkManagerEvent::BookmarkManager_SelectChanged param{m_selectNodes};
-    SendEvent(this, param);
     return result;
 }
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <sigslot/signal.hpp>
+#include "EventConnection.hpp"
 
 class EventBase;
 
 namespace detail
 {
 
-void SetDefaultConnection(EventBase& event, sigslot::connection connection);
+void SetDefaultConnection(EventBase& event, EventConnection connection);
 void DisconnectDefault(EventBase& event);
 
 } // namespace detail
@@ -22,9 +22,9 @@ public:
 
 private:
     friend void detail::SetDefaultConnection(
-        EventBase& event, sigslot::connection connection
+        EventBase& event, EventConnection connection
     );
     friend void detail::DisconnectDefault(EventBase& event);
 
-    sigslot::connection m_defaultConnection;
+    EventConnection m_defaultConnection;
 };

@@ -25,6 +25,7 @@ BookmarkUrlFactoryDialog::BookmarkUrlFactoryDialog(QWidget* parent)
         &BookmarkUrlFactoryDialog::OnTextChanged
     );
     OnTextChanged();
+    ui->nameLineEdit->setFocus();
 }
 
 BookmarkUrlFactoryDialog::~BookmarkUrlFactoryDialog()

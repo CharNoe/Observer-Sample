@@ -36,11 +36,13 @@ private:
     struct ItemModelNode
     {
         std::shared_ptr<core::BookmarkNode> bookmarkNode;
-        std::vector<std::unique_ptr<ItemModelNode>> children;
+        std::vector<quintptr> children;
     };
 
-    static auto MakeItemModelNode(std::shared_ptr<core::BookmarkNode> bookmarkNode)
-        -> std::unique_ptr<ItemModelNode>;
+    static auto ToInternalId(const std::shared_ptr<core::BookmarkNode>& bookmarkNode)
+        -> quintptr;
+
+    auto MakeItemModelNode(std::shared_ptr<core::BookmarkNode> bookmarkNode) -> quintptr;
     auto GetItemModelNode(const QModelIndex& index) const -> const ItemModelNode*;
     auto FindItemModelNode(std::shared_ptr<core::BookmarkNode> bookmarkNode) const
         -> std::pair<const ItemModelNode*, int>;
@@ -48,6 +50,7 @@ private:
         -> std::pair<ItemModelNode*, int>;
 
     std::unique_ptr<ItemModelNode> m_rootNode;
+    std::map<quintptr, ItemModelNode> m_nodeMap;
 
     // BookmarkNodeEvent interface
 private:
@@ -68,7 +71,7 @@ public:
         -> QVariant override;
     auto setData(const QModelIndex& index, const QVariant& value, int role)
         -> bool override;
-    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    auto flags(const QModelIndex& index) const -> Qt::ItemFlags override;
 };
 
 } // namespace ctrl
