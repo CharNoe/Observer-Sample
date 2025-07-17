@@ -9,8 +9,6 @@ namespace core
 
 class BookmarkNode_UrlEvent : public EventBase
 {
-    friend class EventAccess;
-
 public:
     EVENT_DEF(BookmarkNode_Url_UrlChanged)
     {

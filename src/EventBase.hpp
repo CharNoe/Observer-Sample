@@ -14,6 +14,11 @@ void DisconnectDefault(EventBase& event);
 
 class EventBase
 {
+    friend void detail::SetDefaultConnection(
+        EventBase& event, EventConnection connection
+    );
+    friend void detail::DisconnectDefault(EventBase& event);
+
 protected:
     EventBase() = default;
 
@@ -21,10 +26,5 @@ public:
     virtual ~EventBase() = default;
 
 private:
-    friend void detail::SetDefaultConnection(
-        EventBase& event, EventConnection connection
-    );
-    friend void detail::DisconnectDefault(EventBase& event);
-
     EventConnection m_defaultConnection;
 };

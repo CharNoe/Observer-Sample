@@ -15,7 +15,6 @@ namespace ctrl
 
 class BookmarkManagerEvent : public EventBase
 {
-    friend class EventAccess;
     friend class BookmarkManager;
 
 public:

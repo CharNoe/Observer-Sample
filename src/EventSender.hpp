@@ -1,6 +1,5 @@
 #pragma once
 
-#include "EventAccess.hpp"
 #include "EventBase.hpp"
 #include "EventConnection.hpp"
 #include <boost/signals2.hpp>
@@ -34,7 +33,6 @@ class EventSender
     template <class EventType, class EventParam>
     friend void SendEvent(EventSender<EventType>* sender, const EventParam& param);
 
-private:
     using UpdateFunc = void (*)(Event&, const void*);
     struct Slot final
     {
@@ -112,8 +110,7 @@ void SendEvent(EventSender<EventType>* sender, const EventParam& param)
 {
     auto func = [](EventType& event, const void* param)
     {
-        auto func = EventAccess::GetReceiveEventPtr<EventType, EventParam>();
-        (event.*func)(*static_cast<const EventParam*>(param));
+        event.ReceiveEvent(*static_cast<const EventParam*>(param));
     };
     sender->m_sig(func, &param);
 }

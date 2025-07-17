@@ -11,8 +11,6 @@ class BookmarkNode;
 
 class BookmarkNodeEvent : public EventBase
 {
-    friend class EventAccess;
-
 public:
     EVENT_DEF(BookmarkNode_NameChanged)
     {
