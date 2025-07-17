@@ -15,12 +15,13 @@ auto BookmarkManager::GetRootBookmark() const -> std::shared_ptr<core::BookmarkN
     return m_rootBookmark;
 }
 
-std::shared_ptr<core::BookmarkNode> BookmarkManager::GetRootBookmarkBase() const
+auto BookmarkManager::GetRootBookmarkBase() const -> std::shared_ptr<core::BookmarkNode>
 {
     return m_rootBookmark;
 }
 
-bool BookmarkManager::SetCurrentNode(std::shared_ptr<core::BookmarkNode> currentNode)
+auto BookmarkManager::SetCurrentNode(std::shared_ptr<core::BookmarkNode> currentNode)
+    -> bool
 {
     if (m_currentNode == currentNode)
     {
@@ -38,9 +39,9 @@ auto BookmarkManager::GetCurrentNode() const -> std::shared_ptr<core::BookmarkNo
     return m_currentNode;
 }
 
-bool BookmarkManager::SetSelectNodes(
+auto BookmarkManager::SetSelectNodes(
     std::vector<std::shared_ptr<core::BookmarkNode>> selectNodes
-)
+) -> bool
 {
     if (m_selectNodes == selectNodes)
         return false;
@@ -57,7 +58,7 @@ auto BookmarkManager::GetSelectNodes() const
     return m_selectNodes;
 }
 
-bool BookmarkManager::DeleteCurrentNode()
+auto BookmarkManager::DeleteCurrentNode() -> bool
 {
     if (!m_currentNode)
         return false;
@@ -73,7 +74,7 @@ bool BookmarkManager::DeleteCurrentNode()
     return isErased;
 }
 
-size_t BookmarkManager::DeleteSelectNodes()
+auto BookmarkManager::DeleteSelectNodes() -> size_t
 {
     size_t result = 0;
     if (m_selectNodes.empty())

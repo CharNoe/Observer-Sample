@@ -33,7 +33,8 @@ BookmarkUrlFactoryDialog::~BookmarkUrlFactoryDialog()
     delete ui;
 }
 
-std::shared_ptr<core::BookmarkNode_Url> BookmarkUrlFactoryDialog::Execute(QWidget* parent)
+auto BookmarkUrlFactoryDialog::Execute(QWidget* parent)
+    -> std::shared_ptr<core::BookmarkNode_Url>
 {
     BookmarkUrlFactoryDialog dialog{parent};
     if (dialog.exec())

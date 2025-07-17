@@ -3,7 +3,7 @@
 #include "ctrl/System.hpp"
 #include <QApplication>
 
-int main(int argc, char *argv[])
+auto main(int argc, char* argv[]) -> int
 {
     QApplication a(argc, argv);
     ctrl::System system;

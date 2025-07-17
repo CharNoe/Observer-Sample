@@ -9,7 +9,7 @@ BookmarkNode_Url::BookmarkNode_Url(QString name, QString url)
     , m_url{std::move(url)}
 {}
 
-bool BookmarkNode_Url::SetUrl(QString url)
+auto BookmarkNode_Url::SetUrl(QString url) -> bool
 {
     if (m_url == url)
     {
@@ -27,7 +27,7 @@ auto BookmarkNode_Url::GetUrl() const -> QString
     return m_url;
 }
 
-bool BookmarkNode_Url::SetNameImpl(const QString &name)
+auto BookmarkNode_Url::SetNameImpl(const QString& name) -> bool
 {
     if (name == m_name)
         return false;
@@ -35,22 +35,23 @@ bool BookmarkNode_Url::SetNameImpl(const QString &name)
     return true;
 }
 
-QString BookmarkNode_Url::GetNameImpl() const
+auto BookmarkNode_Url::GetNameImpl() const -> QString
 {
     return m_name;
 }
 
-bool BookmarkNode_Url::InsertChildImpl(std::shared_ptr<BookmarkNode> child, size_t index)
+auto BookmarkNode_Url::InsertChildImpl(std::shared_ptr<BookmarkNode> child, size_t index)
+    -> bool
 {
     return false;
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Url::EraseChildImpl(size_t index)
+auto BookmarkNode_Url::EraseChildImpl(size_t index) -> std::shared_ptr<BookmarkNode>
 {
     return nullptr;
 }
 
-size_t BookmarkNode_Url::GetChildrenSizeImpl() const
+auto BookmarkNode_Url::GetChildrenSizeImpl() const -> size_t
 {
     return 0;
 }
@@ -60,27 +61,27 @@ void BookmarkNode_Url::SetParentImpl(std::shared_ptr<BookmarkNode> parent)
     m_parent = parent;
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Url::GetParentImpl() const
+auto BookmarkNode_Url::GetParentImpl() const -> std::shared_ptr<BookmarkNode>
 {
     return m_parent.lock();
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Url::SharedFromThisImpl()
+auto BookmarkNode_Url::SharedFromThisImpl() -> std::shared_ptr<BookmarkNode>
 {
     return shared_from_this();
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Url::GetChildImpl(size_t index) const
+auto BookmarkNode_Url::GetChildImpl(size_t index) const -> std::shared_ptr<BookmarkNode>
 {
     return nullptr;
 }
 
-bool BookmarkNode_Url::IsInsertableImpl(const BookmarkNode& node)
+auto BookmarkNode_Url::IsInsertableImpl(const BookmarkNode& node) -> bool
 {
     return false;
 }
 
-BookmarkKind BookmarkNode_Url::GetKindImpl() const
+auto BookmarkNode_Url::GetKindImpl() const -> BookmarkKind
 {
     return BookmarkKind::Url;
 }

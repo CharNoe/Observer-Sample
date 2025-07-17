@@ -12,8 +12,6 @@ class BookmarkNode_UrlEvent : public EventBase
     friend class EventAccess;
 
 public:
-    virtual ~BookmarkNode_UrlEvent() = default;
-
     EVENT_DEF(BookmarkNode_Url_UrlChanged)
     {
         QString url;

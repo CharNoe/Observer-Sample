@@ -31,7 +31,8 @@ private:
     class UrlAction;
     class ActionFactory;
 
-    static QAction* MakeAction(std::shared_ptr<core::BookmarkNode> node, QWidget* parent);
+    static auto MakeAction(std::shared_ptr<core::BookmarkNode> node, QWidget* parent)
+        -> QAction*;
     void PushAction();
 
     const std::shared_ptr<ctrl::BookmarkManager> m_bookmarkManager;

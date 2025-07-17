@@ -8,7 +8,7 @@ BookmarkNode_Folder::BookmarkNode_Folder(QString name)
     : m_name{std::move(name)}
 {}
 
-bool BookmarkNode_Folder::SetNameImpl(const QString &name)
+auto BookmarkNode_Folder::SetNameImpl(const QString& name) -> bool
 {
     if (name == m_name)
         return false;
@@ -16,7 +16,7 @@ bool BookmarkNode_Folder::SetNameImpl(const QString &name)
     return true;
 }
 
-QString BookmarkNode_Folder::GetNameImpl() const
+auto BookmarkNode_Folder::GetNameImpl() const -> QString
 {
     return m_name;
 }
@@ -26,12 +26,14 @@ void BookmarkNode_Folder::SetParentImpl(std::shared_ptr<BookmarkNode> parent)
     m_parent = parent;
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Folder::GetParentImpl() const
+auto BookmarkNode_Folder::GetParentImpl() const -> std::shared_ptr<BookmarkNode>
 {
     return m_parent.lock();
 }
 
-bool BookmarkNode_Folder::InsertChildImpl(std::shared_ptr<BookmarkNode> child, size_t index)
+auto BookmarkNode_Folder::InsertChildImpl(
+    std::shared_ptr<BookmarkNode> child, size_t index
+) -> bool
 {
     if (index > m_children.size())
         return false;
@@ -40,7 +42,7 @@ bool BookmarkNode_Folder::InsertChildImpl(std::shared_ptr<BookmarkNode> child, s
     return true;
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Folder::EraseChildImpl(size_t index)
+auto BookmarkNode_Folder::EraseChildImpl(size_t index) -> std::shared_ptr<BookmarkNode>
 {
     if (index >= m_children.size())
         return nullptr;
@@ -50,27 +52,28 @@ std::shared_ptr<BookmarkNode> BookmarkNode_Folder::EraseChildImpl(size_t index)
     return child;
 }
 
-size_t BookmarkNode_Folder::GetChildrenSizeImpl() const
+auto BookmarkNode_Folder::GetChildrenSizeImpl() const -> size_t
 {
     return m_children.size();
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Folder::SharedFromThisImpl()
+auto BookmarkNode_Folder::SharedFromThisImpl() -> std::shared_ptr<BookmarkNode>
 {
     return shared_from_this();
 }
 
-std::shared_ptr<BookmarkNode> BookmarkNode_Folder::GetChildImpl(size_t index) const
+auto BookmarkNode_Folder::GetChildImpl(size_t index) const
+    -> std::shared_ptr<BookmarkNode>
 {
     return (index < m_children.size()) ? m_children[index] : nullptr;
 }
 
-bool BookmarkNode_Folder::IsInsertableImpl(const BookmarkNode& node)
+auto BookmarkNode_Folder::IsInsertableImpl(const BookmarkNode& node) -> bool
 {
     return true;
 }
 
-BookmarkKind BookmarkNode_Folder::GetKindImpl() const
+auto BookmarkNode_Folder::GetKindImpl() const -> BookmarkKind
 {
     return BookmarkKind::Folder;
 }

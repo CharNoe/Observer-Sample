@@ -26,9 +26,9 @@ BookmarkItemModelTree::BookmarkItemModelTree(
     ConnectQt(*m_rootNode->bookmarkNode, this);
 }
 
-QModelIndex BookmarkItemModelTree::GetModelIndex(
+auto BookmarkItemModelTree::GetModelIndex(
     const std::shared_ptr<core::BookmarkNode>& node, int column
-) const
+) const -> QModelIndex
 {
     const auto [itemModelNode, row] = FindItemModelNode(node);
     if (!itemModelNode || itemModelNode == m_rootNode.get())
@@ -36,9 +36,8 @@ QModelIndex BookmarkItemModelTree::GetModelIndex(
     return createIndex(row, column, ToInternalId(node));
 }
 
-std::shared_ptr<core::BookmarkNode> BookmarkItemModelTree::GetBookmarkNode(
-    const QModelIndex& index
-) const
+auto BookmarkItemModelTree::GetBookmarkNode(const QModelIndex& index) const
+    -> std::shared_ptr<core::BookmarkNode>
 {
     auto ptr = GetItemModelNode(index);
     return ptr->bookmarkNode;
@@ -49,16 +48,15 @@ auto BookmarkItemModelTree::GetRootNode() const -> std::shared_ptr<core::Bookmar
     return m_rootNode->bookmarkNode;
 }
 
-quintptr BookmarkItemModelTree::ToInternalId(
+auto BookmarkItemModelTree::ToInternalId(
     const std::shared_ptr<core::BookmarkNode>& bookmarkNode
-)
+) -> quintptr
 {
     return reinterpret_cast<quintptr>(bookmarkNode.get());
 }
 
-QVariant BookmarkItemModelTree::headerData(
-    int section, Qt::Orientation orientation, int role
-) const
+auto BookmarkItemModelTree::headerData(int section, Qt::Orientation orientation, int role)
+    const -> QVariant
 {
     if (orientation == Qt::Vertical)
         return {};
@@ -84,8 +82,8 @@ QVariant BookmarkItemModelTree::headerData(
     return {};
 }
 
-QModelIndex BookmarkItemModelTree::index(int row, int column, const QModelIndex& parent)
-    const
+auto BookmarkItemModelTree::index(int row, int column, const QModelIndex& parent) const
+    -> QModelIndex
 {
     if (!hasIndex(row, column, parent))
     {
@@ -96,7 +94,7 @@ QModelIndex BookmarkItemModelTree::index(int row, int column, const QModelIndex&
     return createIndex(row, column, childId);
 }
 
-QModelIndex BookmarkItemModelTree::parent(const QModelIndex& index) const
+auto BookmarkItemModelTree::parent(const QModelIndex& index) const -> QModelIndex
 {
     auto node = GetBookmarkNode(index);
     if (node)
@@ -107,18 +105,18 @@ QModelIndex BookmarkItemModelTree::parent(const QModelIndex& index) const
     return GetModelIndex(node);
 }
 
-int BookmarkItemModelTree::rowCount(const QModelIndex& parent) const
+auto BookmarkItemModelTree::rowCount(const QModelIndex& parent) const -> int
 {
     const ItemModelNode* itemModelNode = GetItemModelNode(parent);
     return static_cast<int>(itemModelNode->children.size());
 }
 
-int BookmarkItemModelTree::columnCount(const QModelIndex& parent) const
+auto BookmarkItemModelTree::columnCount(const QModelIndex& parent) const -> int
 {
     return ColumnCount;
 }
 
-QVariant BookmarkItemModelTree::data(const QModelIndex& index, int role) const
+auto BookmarkItemModelTree::data(const QModelIndex& index, int role) const -> QVariant
 {
     if (!index.isValid())
         return {};
@@ -160,9 +158,9 @@ QVariant BookmarkItemModelTree::data(const QModelIndex& index, int role) const
     return {};
 }
 
-bool BookmarkItemModelTree::setData(
+auto BookmarkItemModelTree::setData(
     const QModelIndex& index, const QVariant& value, int role
-)
+) -> bool
 {
     if (!index.isValid())
         return false;
@@ -193,7 +191,7 @@ bool BookmarkItemModelTree::setData(
     return {};
 }
 
-Qt::ItemFlags BookmarkItemModelTree::flags(const QModelIndex& index) const
+auto BookmarkItemModelTree::flags(const QModelIndex& index) const -> Qt::ItemFlags
 {
     Qt::ItemFlags result = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     if (auto node = GetBookmarkNode(index))

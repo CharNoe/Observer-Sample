@@ -57,9 +57,9 @@ BookmarkToolBar::BookmarkToolBar(
     addSeparator();
 }
 
-QAction* BookmarkToolBar::MakeAction(
+auto BookmarkToolBar::MakeAction(
     std::shared_ptr<core::BookmarkNode> node, QWidget* parent
-)
+) -> QAction*
 {
     ActionFactory factory{parent};
     node->Accept(factory);

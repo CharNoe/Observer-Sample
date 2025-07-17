@@ -23,17 +23,18 @@ private:
 
     // BookmarkNode interface
 private:
-    bool SetNameImpl(const QString &name) override;
-    QString GetNameImpl() const override;
-    bool InsertChildImpl(std::shared_ptr<BookmarkNode> child, size_t index) override;
-    std::shared_ptr<BookmarkNode> EraseChildImpl(size_t index) override;
-    size_t GetChildrenSizeImpl() const override;
+    auto SetNameImpl(const QString& name) -> bool override;
+    auto GetNameImpl() const -> QString override;
+    auto InsertChildImpl(std::shared_ptr<BookmarkNode> child, size_t index)
+        -> bool override;
+    auto EraseChildImpl(size_t index) -> std::shared_ptr<BookmarkNode> override;
+    auto GetChildrenSizeImpl() const -> size_t override;
     void SetParentImpl(std::shared_ptr<BookmarkNode> parent) override;
-    std::shared_ptr<BookmarkNode> GetParentImpl() const override;
-    std::shared_ptr<BookmarkNode> SharedFromThisImpl() override;
-    std::shared_ptr<BookmarkNode> GetChildImpl(size_t index) const override;
-    bool IsInsertableImpl(const BookmarkNode& node) override;
-    BookmarkKind GetKindImpl() const override;
+    auto GetParentImpl() const -> std::shared_ptr<BookmarkNode> override;
+    auto SharedFromThisImpl() -> std::shared_ptr<BookmarkNode> override;
+    auto GetChildImpl(size_t index) const -> std::shared_ptr<BookmarkNode> override;
+    auto IsInsertableImpl(const BookmarkNode& node) -> bool override;
+    auto GetKindImpl() const -> BookmarkKind override;
     void AcceptImpl(BookmarkNodeVisitor& visitor) override;
 };
 

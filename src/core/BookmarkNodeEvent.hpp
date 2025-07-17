@@ -14,8 +14,6 @@ class BookmarkNodeEvent : public EventBase
     friend class EventAccess;
 
 public:
-    virtual ~BookmarkNodeEvent() = default;
-
     EVENT_DEF(BookmarkNode_NameChanged)
     {
         QString name;

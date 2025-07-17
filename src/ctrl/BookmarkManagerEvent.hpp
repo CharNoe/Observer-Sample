@@ -19,8 +19,6 @@ class BookmarkManagerEvent : public EventBase
     friend class BookmarkManager;
 
 public:
-    virtual ~BookmarkManagerEvent() = default;
-
     EVENT_DEF(BookmarkManager_CurrentChanged)
     {
         std::shared_ptr<core::BookmarkNode> currentNode;

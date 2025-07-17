@@ -36,7 +36,7 @@ class EventSender
 
 private:
     using UpdateFunc = void (*)(Event&, const void*);
-    struct Slot
+    struct Slot final
     {
         Event* event;
         void operator()(UpdateFunc func, const void* param)
@@ -63,6 +63,7 @@ void AutoConnect(
     std::shared_ptr<DerivType> receiver
 )
 {
+    static_assert(std::is_base_of_v<EventBase, EventType>);
     if (sender)
     {
         typename EventSender<EventType>::Slot slot{receiver.get()};
